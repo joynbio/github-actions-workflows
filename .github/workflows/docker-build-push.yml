@@ -27,9 +27,9 @@ jobs:
       DOCKER_BUILDKIT: 1
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
     - name: Checkout joynbio/github-actions-workflows
-      uses: actions/checkout@master
+      uses: actions/checkout@v2
       with:
         name: joynbio/github-actions-workflows
         path: github-actions-workflows
