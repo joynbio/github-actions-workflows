@@ -12,6 +12,10 @@ on:
       image_name:
         required: true
         type: string
+      role_name:
+        required: true
+        type: string
+        default: github-actions
 
 
 jobs:
@@ -27,7 +31,7 @@ jobs:
       uses: actions/checkout@v1
     - name: Configure AWS Credentials
       run: |
-        export AWS_ROLE_ARN=arn:aws:iam::${{ inputs.account }}:role/github-actions
+        export AWS_ROLE_ARN=arn:aws:iam::${{ inputs.account }}:role/${{ inputs.role_name }}
         export AWS_WEB_IDENTITY_TOKEN_FILE=/tmp/awscreds
         export AWS_DEFAULT_REGION=${{ inputs.region }}
         echo AWS_WEB_IDENTITY_TOKEN_FILE=$AWS_WEB_IDENTITY_TOKEN_FILE >> $GITHUB_ENV
