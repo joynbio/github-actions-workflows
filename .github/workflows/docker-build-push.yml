@@ -28,6 +28,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v1
+    - name: where am i
+      run: |
+        pwd
+        ls -la
     - name: Configure AWS Credentials OIDC
       run: scripts/configure-aws-credentials-oidc.sh "${{inputs.account}}" "${{inputs.region}}" "${{inputs.role_name}}"
     # - name: Configure AWS Credentials OIDC
