@@ -31,7 +31,8 @@ jobs:
     - name: Checkout joynbio/github-actions-workflows
       uses: actions/checkout@v2
       with:
-        name: joynbio/github-actions-workflows
+        repository: joynbio/github-actions-workflows
+        ref: main
         path: github-actions-workflows
     - name: where am i
       run: |
