@@ -38,6 +38,8 @@ jobs:
         pwd
         ls -la
         find . -name configure-aws-credentials-oidc.sh
+        ls -la github-actions-workflows
+        ls -la github-actions-workflows/scripts
     # - uses: ./.github/actions/configure-aws-credentials-oidc@main
     #   with:
     #     account: ${{ inputs.account }}
