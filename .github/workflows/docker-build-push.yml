@@ -26,6 +26,11 @@ jobs:
     env:
       DOCKER_BUILDKIT: 1
     steps:
+    - uses: joynbio/github-actions-workflows@main
+      with:
+        account: ${{ inputs.account }}
+        region: ${{ inputs.region }}
+        role_name: ${{ inputs.role_name }}
     - name: Checkout
       uses: actions/checkout@v1
     - name: Configure AWS Credentials
