@@ -32,6 +32,7 @@ jobs:
       run: |
         pwd
         ls -la
+        find . -name configure-aws-credentials-oidc.sh
     - name: Configure AWS Credentials OIDC
       run: scripts/configure-aws-credentials-oidc.sh "${{inputs.account}}" "${{inputs.region}}" "${{inputs.role_name}}"
     # - name: Configure AWS Credentials OIDC
