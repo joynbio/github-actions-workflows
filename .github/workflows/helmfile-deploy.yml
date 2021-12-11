@@ -1,0 +1,62 @@
+name: Helmfile Deploy
+
+on:
+  workflow_call:
+    inputs:
+      account:
+        required: true
+        type: string
+      cluster_name:
+        required: true
+        type: string
+      env:
+        required: true
+        type: string
+      helmfile_path:
+        required: true
+        type: string
+      region:
+        required: true
+        type: string
+      role_name:
+        required: false
+        type: string
+        default: github-actions
+
+jobs:
+  helmfile-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      DOCKER_BUILDKIT: 1
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Checkout joynbio/github-actions-workflows
+      uses: actions/checkout@v2
+      with:
+        repository: joynbio/github-actions-workflows
+        ref: main
+        path: github-actions-workflows
+    - name: Configure AWS Credentials OIDC
+      run: github-actions-workflows/scripts/configure-aws-credentials-oidc.sh "${{inputs.account}}" "${{inputs.region}}" "${{inputs.role_name}}"
+    - name: Configure K8s
+      run: aws eks update-kubeconfig --name ${{ inputs.cluster_name }}
+    - name: Setup Helmfile
+      uses: mamezou-tech/setup-helmfile@v0.9.0
+      with:
+        helmfile-version: "v0.142.0"
+        helm-version: "v3.7.1"
+        kubectl-version: "1.21.2"
+    - name: Helmfile Deploy
+      run: |
+        kubectl get no
+        kubectl get ns
+        kubectl get pods -A
+        short_hash=$(git rev-parse --short HEAD | cut -c-7)
+        export env=${{ inputs.env }}
+        export cluster=${{ inputs.cluster_name }}
+        export imageTag="${short_hash}"
+        helmfile -f ${{ inputs.helmfile_path }} sync
