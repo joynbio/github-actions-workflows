@@ -28,18 +28,23 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v1
+    - name: Checkout joynbio/github-actions-workflows
+      uses: actions/checkout@master
+      with:
+        name: joynbio/github-actions-workflows
+        path: github-actions-workflows
     - name: where am i
       run: |
         pwd
         ls -la
         find . -name configure-aws-credentials-oidc.sh
-    - uses: ./.github/actions/configure-aws-credentials-oidc@main
-      with:
-        account: ${{ inputs.account }}
-        region: ${{ inputs.region }}
-        role_name:  ${{ inputs.role_name }}
+    # - uses: ./.github/actions/configure-aws-credentials-oidc@main
+    #   with:
+    #     account: ${{ inputs.account }}
+    #     region: ${{ inputs.region }}
+    #     role_name:  ${{ inputs.role_name }}
     - name: Configure AWS Credentials OIDC
-      run: scripts/configure-aws-credentials-oidc.sh "${{inputs.account}}" "${{inputs.region}}" "${{inputs.role_name}}"
+      run: github-actions-workflows/scripts/configure-aws-credentials-oidc.sh "${{inputs.account}}" "${{inputs.region}}" "${{inputs.role_name}}"
     # - name: Configure AWS Credentials OIDC
     #   run: |
     #     export AWS_ROLE_ARN=arn:aws:iam::${{ inputs.account }}:role/${{ inputs.role_name }}
