@@ -33,6 +33,10 @@ jobs:
         pwd
         ls -la
         find . -name configure-aws-credentials-oidc.sh
+    - uses: ./.github/actions/configure-aws-credentials-oidc@main
+        with:
+          username: ${{ inputs.username }}
+          token: ${{ secrets.envPAT }}
     - name: Configure AWS Credentials OIDC
       run: scripts/configure-aws-credentials-oidc.sh "${{inputs.account}}" "${{inputs.region}}" "${{inputs.role_name}}"
     # - name: Configure AWS Credentials OIDC
