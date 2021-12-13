@@ -10,6 +10,10 @@ on:
         required: false
         type: string
         default: .
+      cache_path:
+        required: false
+        type: string
+        default: ""
       region:
         required: true
         type: string
@@ -43,10 +47,19 @@ jobs:
     - name: Build and Push
       run: |
         short_hash=$(git rev-parse --short HEAD | cut -c-7)
-        echo "short_hash=$short_hash"
+        docker_image="${{ inputs.account }}.dkr.ecr.${{ inputs.region }}.amazonaws.com/${{ inputs.image_name }}"
+        echo "short_hash=${short_hash}"
+        echo "docker_image=${docker_image}"
         docker login -u AWS -p "$(aws ecr get-login-password --region ${{ inputs.region }})" ${{ inputs.account }}.dkr.ecr.${{ inputs.region }}.amazonaws.com
         docker build ${{ inputs.build_path }} \
-          -t "${{ inputs.account }}.dkr.ecr.${{ inputs.region }}.amazonaws.com/${{ inputs.image_name }}:latest" \
-          -t "${{ inputs.account }}.dkr.ecr.${{ inputs.region }}.amazonaws.com/${{ inputs.image_name }}:$short_hash"
-        docker push "${{ inputs.account }}.dkr.ecr.${{ inputs.region }}.amazonaws.com/${{ inputs.image_name }}:latest"
-        docker push "${{ inputs.account }}.dkr.ecr.${{ inputs.region }}.amazonaws.com/${{ inputs.image_name }}:$short_hash"
+          -t "${docker_image}:latest" \
+          -t "${docker_image}:${short_hash}"
+        docker push "${docker_image}:latest"
+        docker push "${docker_image}:${short_hash}"
+        if [[ "${{ inputs.cache_path }}" != "" ]]; then
+          mkdir -p "${{ inputs.cache_path }}" ||:
+          docker save "${docker_image}:latest" -o "${{ inputs.cache_path }}/${docker_image}.latest.tar"
+          docker save "${docker_image}:${short_hash}" -o "${{ inputs.cache_path }}/${docker_image}.${short_hash}.tar"
+          echo "Created docker image tar:"
+          ls -la ${{ inputs.cache_path }} | grep "${docker_image}"
+        fi
