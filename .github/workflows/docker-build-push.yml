@@ -6,6 +6,10 @@ on:
       account:
         required: true
         type: string
+      build_path:
+        required: false
+        type: string
+        default: .
       region:
         required: true
         type: string
@@ -41,7 +45,7 @@ jobs:
         short_hash=$(git rev-parse --short HEAD | cut -c-7)
         echo "short_hash=$short_hash"
         docker login -u AWS -p "$(aws ecr get-login-password --region ${{ inputs.region }})" ${{ inputs.account }}.dkr.ecr.${{ inputs.region }}.amazonaws.com
-        docker build . \
+        docker build ${{ inputs.build_path }} \
           -t "${{ inputs.account }}.dkr.ecr.${{ inputs.region }}.amazonaws.com/${{ inputs.image_name }}:latest" \
           -t "${{ inputs.account }}.dkr.ecr.${{ inputs.region }}.amazonaws.com/${{ inputs.image_name }}:$short_hash"
         docker push "${{ inputs.account }}.dkr.ecr.${{ inputs.region }}.amazonaws.com/${{ inputs.image_name }}:latest"
