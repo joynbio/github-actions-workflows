@@ -14,6 +14,10 @@ on:
         required: false
         type: string
         default: ""
+      github_token_from_ssm:
+        required: false
+        type: string
+        default: ""
       region:
         required: true
         type: string
@@ -46,12 +50,17 @@ jobs:
       run: github-actions-workflows/scripts/configure-aws-credentials-oidc.sh "${{inputs.account}}" "${{inputs.region}}" "${{inputs.role_name}}"
     - name: Build and Push
       run: |
+        if [[ "${{ inputs.github_token_from_ssm_path }}" != "" ]]; then
+          GITHUB_TOKEN_FROM_SSM=$(aws ssm get-parameter --name "${{ inputs.github_token_from_ssm_path }}" --with-decryption)
+          echo "GITHUB_TOKEN_FROM_SSM=${GITHUB_TOKEN_FROM_SSM:0:3}..."
+        fi
         short_hash=$(git rev-parse --short HEAD | cut -c-7)
         docker_image="${{ inputs.account }}.dkr.ecr.${{ inputs.region }}.amazonaws.com/${{ inputs.image_name }}"
         echo "short_hash=${short_hash}"
         echo "docker_image=${docker_image}"
         docker login -u AWS -p "$(aws ecr get-login-password --region ${{ inputs.region }})" ${{ inputs.account }}.dkr.ecr.${{ inputs.region }}.amazonaws.com
         docker build ${{ inputs.build_path }} \
+          --build-arg GITHUB_TOKEN=${GITHUB_TOKEN_FROM_SSM} \
           -t "${docker_image}:latest" \
           -t "${docker_image}:${short_hash}"
         docker push "${docker_image}:latest"
