@@ -14,7 +14,7 @@ on:
         required: false
         type: string
         default: ""
-      github_token_from_ssm:
+      github_token_from_ssm_path:
         required: false
         type: string
         default: ""
