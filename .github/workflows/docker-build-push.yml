@@ -51,7 +51,7 @@ jobs:
     - name: Build and Push
       run: |
         if [[ "${{ inputs.github_token_from_ssm_path }}" != "" ]]; then
-          GITHUB_TOKEN_FROM_SSM=$(aws ssm get-parameter --name "${{ inputs.github_token_from_ssm_path }}" --with-decryption)
+          GITHUB_TOKEN_FROM_SSM=$(aws ssm get-parameter --name "${{ inputs.github_token_from_ssm_path }}" --with-decryption | jq -r .Parameter.Value)
           echo "GITHUB_TOKEN_FROM_SSM=${GITHUB_TOKEN_FROM_SSM:0:3}..."
         fi
         short_hash=$(git rev-parse --short HEAD | cut -c-7)
