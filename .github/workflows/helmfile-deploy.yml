@@ -60,8 +60,9 @@ jobs:
         kubectl get ns
         kubectl get pods -A
         short_hash=$(git rev-parse --short HEAD | cut -c-7)
-        export env=${{ inputs.env }}
         export cluster=${{ inputs.cluster_name }}
         export dns_domain=${{ inputs.dns_domain }}
+        export env=${{ inputs.env }}
         export imageTag="${short_hash}"
+        export region=${{ inputs.region }}
         helmfile -f ${{ inputs.helmfile_path }} sync
