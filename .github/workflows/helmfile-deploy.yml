@@ -9,6 +9,10 @@ on:
       cluster_name:
         required: true
         type: string
+      dns_domain:
+        required: false
+        type: string
+        default: DNS_DOMAIN_NOT_DEFINED
       env:
         required: true
         type: string
@@ -58,5 +62,6 @@ jobs:
         short_hash=$(git rev-parse --short HEAD | cut -c-7)
         export env=${{ inputs.env }}
         export cluster=${{ inputs.cluster_name }}
+        export dns_domain=${{ inputs.dns_domain }}
         export imageTag="${short_hash}"
         helmfile -f ${{ inputs.helmfile_path }} sync
